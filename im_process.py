@@ -13,14 +13,14 @@ def process(im):
 			dx = x_shift * 10
 			dy = y_shift * 10			
 			sample = np.asarray(im.crop((dx, dy, dx + 100, dy + 100)).convert("L"))
-			result[x_shift].append("{} = {}".format(dx,dy))
+			result[x_shift].append("{} = {}".format(dx,dy)) ### temporary
 			#print("photo")			
 			#print("dx = {}   dy = {}".format(dx,dy))
-	print(result[51][11])
+	#print(result[51][11])
 
 
 
 
-im = Image.open("1.jpg")
+#im = Image.open("1.jpg")
 
-process(im)
+#process(im)
