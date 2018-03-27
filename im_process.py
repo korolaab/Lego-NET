@@ -16,7 +16,7 @@ def process(im):
 			result[x_shift].append("{} = {}".format(dx,dy)) ### temporary
 			#print("photo")			
 			#print("dx = {}   dy = {}".format(dx,dy))
-	#print(result[51][11])
+	#print(result[51][11])erq
 
 
 
