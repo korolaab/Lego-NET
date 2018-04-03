@@ -83,7 +83,7 @@ def create_model(x_train,y_train):
 best_run,best_model = optim.minimize(model=create_model,
                           data=data,
                           algo=tpe.suggest,
-                          max_evals=5,
+                          max_evals=10,
                           trials=Trials())
 
 print("Trained succsesfully!")
@@ -97,7 +97,7 @@ print("Succsess")
 print("Saving weights...")                                                  
 best_model.save_weights("block_classifier_weights.h5")   ### saving weghts
 print("Succsess")   
-
+exit()
 
 
 
