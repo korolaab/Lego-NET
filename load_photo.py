@@ -47,40 +47,51 @@ def load(dataset_folder):               ### main func
     arr_class = []
     name = ''
     global arr_name
+    #num = 0
     for folder in folders:
         files = os.listdir(dataset_folder + '/' + folder)
         if(check_name(folder)):
             arr_name.append(folder)
 
         print("Woriking with " + dataset_folder+'/'+folder)
-        for i in files:        
-            im = (Image.open(dataset_folder + '/' + folder + '/' +i)).convert("L")   #loading of file and converting to grays
+        for i in files:
+            #print(i)
+            im = (Image.open(dataset_folder + '/' + folder + '/' +i)).convert("RGB")  #loading of file and converting to grays
                        
-            arr.append(np.asarray(im, dtype="uint8" ))                          #different flips 
-            arr.append(np.asarray(im.transpose(PIL.Image.TRANSPOSE), dtype="uint8" ))
-            arr.append(np.asarray(im.transpose(PIL.Image.FLIP_LEFT_RIGHT), dtype="uint8" ))
-            arr.append(np.asarray(im.transpose(PIL.Image.FLIP_TOP_BOTTOM), dtype="uint8" ))
-            arr.append(np.asarray(im.transpose(PIL.Image.ROTATE_180), dtype="uint8" ))
-            arr.append(np.asarray(im.transpose(PIL.Image.ROTATE_270), dtype="uint8" ))
-            arr.append(np.asarray(im.transpose(PIL.Image.ROTATE_90), dtype="uint8" ))
+            arr.append(np.asarray(im, dtype="uint8" ))                       #different flips 
             #name = name_process(folder)
+            #num = num + 1
+            #if(num == 127 or num == 139):
+            #    print("Error in:"+ dataset_folder+'/'+folder+'/'+i)
             
             
-            num = 7
-            while num > 0:
-                arr_class.append(num_class(folder))
-                num = num - 1        
+            arr_class.append(num_class(folder))
+                  
         
     arr = np.array(arr)
     arr_class = np.array(arr_class)
     #print(len(arr))
     #print(arr)
     print("=================================================")
-    print("I have found {} images seperated into {} classes".format(len(arr)//7,len(arr_name)))
+    print("I have found {} images seperated into {} classes".format(len(arr),len(arr_name)))
     print("=================================================")
     print(arr_name)    
     return arr,arr_class
 
 
+#im = (Image.open('dataset' + '/' + 'container' + '/'+'1.gif'))
+#image = np.asarray(im.convert("RGB"), dtype="uint8" )
+#print(image.shape)
+'''
+im = (Image.open("1.gif")).convert("RGB")
+im.show()  #loading of file and converting to grays
+im.transpose(PIL.Image.TRANSPOSE).show()
+im.transpose(PIL.Image.FLIP_LEFT_RIGHT).show()
+im.transpose(PIL.Image.ROTATE_270).show()
+im.transpose(PIL.Image.ROTATE_180).show()
+im.transpose(PIL.Image.ROTATE_90).show()
+im.transpose(PIL.Image.ROTATE_45).show()
+'''
 
-load("dataset")
+
+#load("dataset")
