@@ -1,76 +1,60 @@
 import numpy as np
 import sys
-
+import math
+from PIL import ImageDraw
 
 np.set_printoptions(threshold=np.nan)   
 
-<<<<<<< HEAD
-def circle_sum(x,y,arr,clas,radius):	
-	sigma = 0
-	for dx in range(x ,x+100):
-			for dy in range(y ,y+100):
-=======
 def circle_sum(x,y,arr,clas,radius):
 
 	sigma = 0
 	for dx in range(x-radius ,x+radius+1):
-			for dy in range(y-radius ,y+radius+1):
+			for dy in range(round(y -  round(math.sqrt(radius**2-(dx-x)^2))) ,y+round(math.sqrt(radius**2-(dx-x)^2))):
 				if(dx>639 or dy>479):
 					continue
->>>>>>> 53f561826127f1d84b094b3b3d9c96acc748fd83
 				sigma += arr[dx][dy][clas]
 	#print(sigma)
 	return sigma
+def act(val):
+	val = val//10000
+	return val/(1+abs(val))
+
 def finder(result):
 	#result.sum(0).sum(0)
-<<<<<<< HEAD
-	arr =[]
-	for clas in range(0,8):		
-=======
-	obj_radius = [40,45,45,0,50,50,20,35]
+	# obj_radius = [40,45,45,0,50,50,20,35]
+
+	radius = 20
 	arr =[]
 	global name
-	for clas in range(0,8):
+	for clas in range(0,6):
 		if(name[clas]=="nothing"):
 			continue		
->>>>>>> 53f561826127f1d84b094b3b3d9c96acc748fd83
-		max_delta=0
+		max_val=0
 		xm = 0
 		ym = 0
 		objekt=[0,0,0]
-<<<<<<< HEAD
-		for x in range(55):
-			for y in range(38):
-				dx = x *10
-				dy = y * 10
-				delta = circle_sum(dx,dy,result,clas,radius=50)
-				if delta > max_delta:
-					max_delta = delta
-					
-					xm = dx
-					ym = dy
-					#print(max_delta)
-					#print(dx)
-					#print(dy)
-			#print('1')
-		objekt=[xm+50,ym+50,clas]
-		#print('22222222222222222222222222')
-		arr.append(objekt)
-=======
+		last_val = 0
 		for x in range(19):
 			for y in range(13):
 				dx = x * 30 + 50
 				dy = y * 30 + 50
-				delta = circle_sum(dx,dy,result,clas,obj_radius[clas])
-				if delta > max_delta:
-					max_delta = delta					
+
+				val = circle_sum(dx,dy,result,clas,radius)
+				if val > max_val:
+					max_val = val					
 					xm = dx
 					ym = dy
-		print("{}={}".format(name[clas],round(max_delta)))
-		if max_delta >1000:
+				delta = val - last_val
+				#print(delta)
+				last_val = val
+                #if(delta<0 and last_val>5000):
+
+
+
+		print("{}={} = activation {}".format(name[clas],round(max_val),act(max_val)))
+		if max_val >1000:
 			objekt=[xm,ym,clas]
 			arr.append(objekt)
->>>>>>> 53f561826127f1d84b094b3b3d9c96acc748fd83
 	return arr
 
 
@@ -95,40 +79,32 @@ def image_show(im,results):
             dx,dy,obj = result### one object
             if(name[obj] == "nothing"):
                 continue
-<<<<<<< HEAD
-            if(obj > 3):
-                obj-=1             
-            k = c.color(im.crop((dx-50, dy-50, dx + 50, dy + 50)).convert("RGB"),obj)
-            im.paste(k, (dx-50,dy-50,dx + 50,dy+ 50))
-    i = 0    
-    while i < 7 :
-=======
-             
-            k = c.color(im.crop((dx-50, dy-50, dx + 50, dy + 50)).convert("RGB"),obj)
-            im.paste(k, (dx-50,dy-50,dx + 50,dy+ 50))
-        
-    for i in range (0,8):
->>>>>>> 53f561826127f1d84b094b3b3d9c96acc748fd83
-        if(name[i] == "nothing"):
-                continue
+    
 
-        print("{} colored by {}".format(name[i],color[i]))
+
+            draw = ImageDraw.Draw(im)
+            draw.rectangle([dx-50, dy-50, dx+50, dy+50],outline="green")
+            draw.text([dx+50,dy-50],text = name[obj],fill="green")
+            del draw
+           
+    #         k = c.color(im.crop((dx-50, dy-50, dx + 50, dy + 50)).convert("RGB"),obj)
+    #         im.paste(k, (dx-50,dy-50,dx + 50,dy+ 50))
+        
+    # for i in range (0,6):
+    #     if(name[i] == "nothing"):
+    #             continue
+
+    #     print("{} colored by {}".format(name[i],color[i]))
                                   
     return im
                
 
-              
-<<<<<<< HEAD
-def fill(im,x,y,clas):
-	for dx in range(x ,x+100):
-		for dy in range(y ,y+100):
-			im[dx][dy][clas]+=1
-=======
+from PIL import ImageFilter
+
 def fill(im,x,y,clas,value):
 	for dx in range(x ,x+100):
 		for dy in range(y ,y+100):
 			im[dx][dy][clas]+=value
->>>>>>> 53f561826127f1d84b094b3b3d9c96acc748fd83
 			#print("{} {} {}".format(im[x][y][clas],x,y))
 	return im
 def process(im):
@@ -138,7 +114,13 @@ def process(im):
     dy = 0
     i = 0
     result = []							###matrix of results in each piece of image
-    image = np.zeros((640,480,8))           ###image             
+    #ker = 1*np.array([-1,-1,-1,-1,9,-1,-1,-1,-1])
+    #print(ker)
+# Convolve
+    #im = im.filter(ImageFilter.Kernel((3,3),ker,scale=1,offset=0))
+    #im = im.filter(ImageFilter.Kernel((3,3),ker,scale=1,offset=0))
+    
+    image = np.zeros((640,480,6))           ###image             
     model = create_model()              ###network model creation
     for x_shift in range(55):           ###stupid algoritm
         result.append([])
@@ -146,51 +128,64 @@ def process(im):
             dx = x_shift * 10
             dy = y_shift * 10			
             sample = np.asarray(im.crop((dx, dy, dx + 100, dy + 100)).convert("RGB"))###cropping piece of image
-            sample =np.expand_dims(sample, axis=0)  ###adding one dimension to sample
-<<<<<<< HEAD
-            res = model.predict(x = sample)        ###neral network prediction
-            if(name[res.argmax()] == "nothing"):
-                continue
-            image = fill(image,dx,dy,res.argmax())
-
-            #if(name[res.argmax()] == "nothing"):
-            #    continue
-            #print("x = {} y = {}  ::: {}{}".format(dx, dy,name[res.argmax()],res.argmax()))
-=======
+            sample =np.expand_dims(sample, axis=0)/255  ###adding one dimension to sample
             res = model.predict(sample)        ###neral network prediction
             obj = res.argmax()
-            if(name[obj] == "nothing"):
-                continue
 
-            #print(res[obj])
+            # if(name[obj] == "nothing"):
+            #     continue
+
+            
+           
             image = fill(image,dx,dy,obj,res.max())
 
             #if(name[res.argmax()] == "nothing"):
             #    continue
-            print("x = {} y = {}  ::: {}{}".format(dx, dy,name[res.argmax()],res.argmax()))
->>>>>>> 53f561826127f1d84b094b3b3d9c96acc748fd83
-
+            #print("x = {} y = {}  ::: {} {}".format(dx, dy,name[res.argmax()],res.max()))
+        
     #result = np.array(result)
     return image
+from matplotlib import pyplot as PLT
+from matplotlib import pyplot, transforms
+import scipy.misc
+from scipy import ndimage
+def plotting(x):
+    #x = x.reshape(480,640,8)
+    fig = PLT.figure()
+    for i in range(0,6):
+        PLT.subplot(2,3,i+1).set_title(name[i])
+
+        
+        PLT.imshow(x[:,:,i].T,cmap='jet',vmin=0, vmax=100)
+        
+        PLT.axis('off')
+        PLT.colorbar()
+
+    # PLT.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
+    # cax = PLT.axes([0.85, 0.1, 0.075, 0.8])
+    # PLT.colorbar(cax=cax)
+    
+    
+    PLT.show()
+
+
 
 def main(arg):   
        ###names of objects from folders in "dataset/"
-<<<<<<< HEAD
     
     im = Image.open(arg)             ###load image which was set in arguments
     
-=======
-    
-    im = Image.open(arg)             ###load image which was set in arguments
-    
->>>>>>> 53f561826127f1d84b094b3b3d9c96acc748fd83
     x = process(im)
-    print(x.shape)
+    
     y = finder(x)
+    
+    # PLT.imshow(x[:,:,2])
+    # PLT.show()
     print(y)
     im = image_show(im,y)
 
     im.show()
+    plotting(x)
 if __name__ == '__main__':
     if(len(sys.argv) < 2):          ###parsing arguments
         print("Input path to the image!")
@@ -204,14 +199,10 @@ if __name__ == '__main__':
     import color as c
     os.environ["TF_CPP_MIN_LOG_LEVEL"]= "3"
     name = LOAD.load_names("dataset")
-<<<<<<< HEAD
-    main(sys.argv[1])
-=======
-    model = create_model()
-    pre = model.prediction(sys.argv[1])
-    print(pre.argmax())
-    print(pre)
+    #model = create_model()
+    #pre = model.prediction(sys.argv[1])
+    #print(pre.argmax())
+    #print(pre)
     #LOAD.load("dataset")
     #print(name)
-   	#main(sys.argv[1])
->>>>>>> 53f561826127f1d84b094b3b3d9c96acc748fd83
+    main(sys.argv[1])
