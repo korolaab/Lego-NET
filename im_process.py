@@ -2,8 +2,37 @@ import numpy as np
 import sys
 import math
 from PIL import ImageDraw
+import cv2
 
-np.set_printoptions(threshold=np.nan)   
+np.set_printoptions(threshold=np.nan) 
+
+
+
+def finder_OpenCV(img):
+    img = np.where(img > 40, 255, 0)
+    arr =[]
+    for label in range(6):
+
+        if(name[label]=="nothing"):
+            continue
+        im = np.ascontiguousarray(img[:,:,label].T, dtype=np.uint8)
+        #print(im.shape)
+        # fig = PLT.figure()
+        # PLT.imshow(im)
+        # PLT.show()
+        _, contours, hierarchy = cv2.findContours(im, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+            # contours,hierarchy = cv2.findContours(thresh, 1, 2)
+        # im = Image.fromarray(img.astype('uint8'), 'RGB').convert('L')
+            #im.show()
+            # print(len(contours))
+        #print(label)
+        #print(contours)
+        for cnt in contours:
+            cord = cv2.boundingRect(cnt)
+            print("{} == {}".format(label,cord))
+            objekt = [cord,label]
+            arr.append(objekt)
+    return arr
 
 def circle_sum(x,y,arr,clas,radius):
 
@@ -76,15 +105,17 @@ def image_show(im,results):
     global name
     color = c.arr   ### color names
     for result in results:
-            dx,dy,obj = result### one object
+            #coord,obj = result### one object
+            x,y,obj = result
             if(name[obj] == "nothing"):
                 continue
-    
+            #x,y,w,h=coord
 
+            #print(coord)
 
             draw = ImageDraw.Draw(im)
-            draw.rectangle([dx-50, dy-50, dx+50, dy+50],outline="green")
-            draw.text([dx+50,dy-50],text = name[obj],fill="green")
+            draw.point((x,y),fill='green')
+            draw.text((x,y),text = name[obj],fill="green")
             del draw
            
     #         k = c.color(im.crop((dx-50, dy-50, dx + 50, dy + 50)).convert("RGB"),obj)
@@ -132,8 +163,8 @@ def process(im):
             res = model.predict(sample)        ###neral network prediction
             obj = res.argmax()
 
-            # if(name[obj] == "nothing"):
-            #     continue
+            if(name[obj] == "nothing"):
+                continue
 
             
            
@@ -141,7 +172,7 @@ def process(im):
 
             #if(name[res.argmax()] == "nothing"):
             #    continue
-            #print("x = {} y = {}  ::: {} {}".format(dx, dy,name[res.argmax()],res.max()))
+            print("x = {} y = {}  ::: {} {}".format(dx, dy,name[res.argmax()],res.max()))
         
     #result = np.array(result)
     return image
@@ -181,10 +212,12 @@ def main(arg):
     
     # PLT.imshow(x[:,:,2])
     # PLT.show()
-    print(y)
+    
+
     im = image_show(im,y)
 
     im.show()
+    
     plotting(x)
 if __name__ == '__main__':
     if(len(sys.argv) < 2):          ###parsing arguments
