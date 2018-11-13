@@ -1,6 +1,6 @@
 # Lego_hand
 
-Dataset ===>>> https://drive.google.com/open?id=1NZFzE0nh2lCMlWoYSANU1kY5jvpg0DTO
+Dataset ===>>> Report me if you want to use my dataset by email "korolaab@yandex.ru" with subject "Dataset Lego"
 
 ## HOW TO TRAIN
 1) Extract "dataset" into the root of "Lego_hand".
