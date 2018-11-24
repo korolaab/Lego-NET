@@ -11,7 +11,7 @@ import numpy as np
 import load_photo as LOAD
 import os
 import color as c
-np.set_printoptions(threshold=np.nan) 
+#np.set_printoptions(threshold=np.nan) 
 
 name = LOAD.load_names("dataset")
 
@@ -261,9 +261,9 @@ def process(im):
     
     heatmap = np.zeros((640,480,6))           ###image             
     # model = create_model()              ###network model creation
-    for x_shift in range(0,541,30):           ###stupid algoritm
+    for x_shift in range(0,541,20):           ###stupid algoritm
         result.append([])
-        for y_shift in range(0,381,40):
+        for y_shift in range(0,381,20):
             dx = x_shift
             dy = y_shift           
             sample = np.asarray(im.crop((dx, dy, dx + 100, dy + 100)).convert("RGB"))###cropping piece of image
