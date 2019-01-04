@@ -1,6 +1,7 @@
 # Lego_hand
 
 Dataset ===>>> Report me if you want to use my dataset by email "korolaab@yandex.ru" with subject "Dataset Lego"
+Weights ===>>> Also you can ping me if you want to use my weights
 
 ## HOW TO TRAIN
 1) Extract "dataset" into the root of "Lego_hand".
