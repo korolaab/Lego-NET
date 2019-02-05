@@ -14,16 +14,14 @@ import tensorflow as tf
 import numpy as np
 import load_photo as LOAD
 import os
-
+import argparse
 from matplotlib import pyplot as PLT
 from matplotlib import pyplot, transforms
-import scipy.misc
-from scipy import ndimage
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.25)
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
-os.environ["TF_CPP_MIN_LOG_LEVEL"]= "3"
-name = LOAD.load_names()
+map = ''
+w = ''
+Debug = ''
+
 
 def finder_OpenCV(img):
     for i in range(6):
@@ -91,21 +89,20 @@ def finder(result): # my finder
     return arr
 
 def create_model():
-    json_file = open("model_parameters/BC_model.json", "r")    ###loading from json file the model
+    json_file = open("models/cnn_model.json", "r")    ###loading from json file the model
     model_json = json_file.read()
     model = model_from_json(model_json)
-    model.load_weights('model_parameters/BC_weights.h5')       ###loading weights from file
+    model.load_weights(w)       ###loading weights from file
     model.compile(loss='categorical_crossentropy',
                   optimizer="adam",
                   metrics=['accuracy'])
     return model
-model = create_model()
+
 
 def check_objects(im,results):
     checked = []
     global name
     global model
-    color = c.arr   ### color names
     for result in results:
             coord,obj = result### one object
             #x,y,obj = result
@@ -119,17 +116,29 @@ def check_objects(im,results):
             res = model.predict(sample)                  ###neral network prediction
 
             prob = res[0][obj]
-            print()
+
             if(round(prob) != 0 ):
                 checked.append(result)
-            # print("{} {} {}".format(coord,name[obj],prob))
-            # draw = ImageDraw.Draw(im)
-            # draw.rectangle((x,y,x+w,y+h),outline='green')
-            # draw.text((x,y),text = name[obj]+"  "+str(prob),fill="green")
-            # del draw
+
 
     return checked
-
+def show_im(im,results):
+    for result in results:
+            coord,obj = result### one object
+            #x,y,obj = result
+            if(name[obj] == "nothing"):
+                continue
+            x,y,w,h=coord
+            sample = np.asarray(im.crop((x, y, x+w, y+h)).convert("RGB").resize((100,100)))
+            sample =np.expand_dims(sample, axis=0)/255   ###adding one dimension to sample
+            res = model.predict(sample)                  ###neral network prediction
+            prob = res[0][obj]
+            print("{} {} {}".format(coord,name[obj],prob))
+            draw = ImageDraw.Draw(im)
+            draw.rectangle((x,y,x+w,y+h),outline='green')
+            draw.text((x,y),text = name[obj]+ "  " + str(prob),fill="green")
+            del draw
+    im.show()
 def process(im):
     global name
     global model
@@ -169,15 +178,27 @@ def main(im):
     y = finder_OpenCV(x)            ### return coordinates of objects[x,y,w,h]
 
     y = check_objects(im,y)
-    #im.show()
-    #plotting(x)
-    return y
+    show_im(im,y)
+    if(map):
+        plotting(x)
+    return 0
 
 if __name__ == '__main__':
-    if(len(sys.argv) < 2):          ###parsing arguments
-        print("Input path to the image!")
-        exit()
+    parser = argparse.ArgumentParser(description="Finding objects on image")
+    parser.add_argument("--image",action = "store", metavar='<path>',default = None, required=True ,dest = "img", help="Image")
+    # parser.add_argument("--model",dest='model',default = "cnn", choices=['cnn'], help="Models")
+    parser.add_argument("--Weights",action = "store",default="cnn_weights.h5", metavar='<path>',required=True,dest = "w", help="Weights")
+    parser.add_argument("-d", "--Debug ",dest='Debug', action="store_false", help="Debuging information")
+    parser.add_argument("--map",dest="map",action="store_true",help="Plotting heatmap")
+    args = parser.parse_args()
+    # print(args.model)
+    if(args.Debug):
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' ###no debugging info
 
     name = LOAD.load_names()
-
-    main(Image.open(sys.argv[1]))
+    # m = args.model
+    w = args.w
+    map = args.map
+    Debug = args.Debug
+    model = create_model()
+    main(Image.open(args.img))
