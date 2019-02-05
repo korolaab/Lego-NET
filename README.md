@@ -10,8 +10,11 @@ Lego sorting machine. The main task of the machine is sorting Lego parts such as
 2. Open terminal.
 3. Input ```python train.py --model=cnn ```have nice training. =)
 ## HOW TO USE
-Input ```python im_process.py <path>``` You will get location of object and it's label. Also you will get figure of heatmaps for all labels.
+Input ```python im_process.py --image=<path> --Weights=<weights path>``` You will get location of object and it's label.
+Add  ```--map ``` if you want to watch heatmap.
 ## EXAMPLES
 ![screenshot of result](https://sun1-6.userapi.com/c844722/v844722616/18d1f0/RWZLHSuz6x0.jpg)
 ## DATASET
 Extract to root of Lego_hand archive([Google Drive](https://drive.google.com/file/d/1D7mEB8XH9sLy6GHo89HE-NMJRcYorvLq/view?usp=sharing))
+### Images for test
+Just extract and set one of them in arguments.([Images](https://drive.google.com/open?id=1U0v3WrnQEql4P-VBB7b0l_9CkrfQ3_bU))
