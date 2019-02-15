@@ -6,7 +6,6 @@ import PIL
 from PIL import ImageDraw
 from PIL import Image
 from PIL import ImageFilter
-import cv2
 
 from keras.models import load_model , model_from_json
 import tensorflow as tf
@@ -17,7 +16,8 @@ import os
 import argparse
 from matplotlib import pyplot as PLT
 from matplotlib import pyplot, transforms
-
+import skimage
+from skimage import measure
 map = ''
 w = ''
 Debug = ''
@@ -31,13 +31,18 @@ def finder_OpenCV(img):
         img[:,:,i]=img[:,:,i]-m*0.6
     img = np.where(img > 0, 1, 0)
     arr =[]
+    # print(img.shape)
     for label in range(6):
         if(name[label]=="nothing"):
             continue
-        im = np.ascontiguousarray(img[:,:,label].T, dtype=np.uint8)
-        _, contours, hierarchy = cv2.findContours(im, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
-        for cnt in contours:
-            cord = cv2.boundingRect(cnt)
+        im = img[:,:,label].T
+        contours = measure.find_contours(im, 0.8)
+        for contour in contours:
+            coordinates = contour.astype(int)
+            ymax, xmax = coordinates.max(axis=0)
+            ymin, xmin = coordinates.min(axis=0)
+            # print("xmin{} ymin{} xmax{} ymax{}".format(xmin,ymin,xmax,ymax))
+            cord = (xmin,ymin,xmax-xmin,ymax-ymin)
             objekt = [cord,label]
             arr.append(objekt)
     return arr
@@ -46,7 +51,7 @@ def circle_avr(x,y,arr,clas,radius):
     sigma = 0
     n = 0
     for dx in range(x-radius ,x+radius+1):
-            for dy in range(round(y -  round(math.sqrt(radius**2-(dx-x)^2))) ,y+round(math.sqrt(radius**2-(dx-x)^2))):
+            for dy in range(round(y -  round(math.sqrt(radius**2-(dx-x)^2))), y+round(math.sqrt(radius**2-(dx-x)^2))):
                 if(dx>639 or dy>479):
                     continue
                 sigma += arr[dx][dy][clas]
@@ -57,7 +62,7 @@ def circle_sum(x,y,arr,clas,radius):
     sigma = 0
     n = 0
     for dx in range(x-radius ,x+radius+1):
-            for dy in range(round(y -  round(math.sqrt(radius**2-(dx-x)^2))) ,y+round(math.sqrt(radius**2-(dx-x)^2))):
+            for dy in range(round(y -  round(math.sqrt(radius**2-(dx-x)^2))), y+round(math.sqrt(radius**2-(dx-x)^2))):
                 if(dx>639 or dy>479):
                     continue
     return sigma
@@ -153,8 +158,8 @@ def process(im):
             dx = x_shift
             dy = y_shift
             sample = np.asarray(im.crop((dx, dy, dx + 100, dy + 100)).convert("RGB"))###cropping piece of image
-            sample =np.expand_dims(sample, axis=0)/255  ###adding one dimension to sample
-            res = model.predict(sample)        ###neral network prediction
+            sample =np.expand_dims(sample, axis=0)/255                               ###adding one dimension to sample
+            res = model.predict(sample)                                              ###neral network prediction
             obj = res.argmax()
 
             if(name[obj] == "nothing"):
@@ -177,7 +182,7 @@ def main(im):
     x = process(im)
     y = finder_OpenCV(x)            ### return coordinates of objects[x,y,w,h]
 
-    y = check_objects(im,y)
+    # y = check_objects(im,y)
     show_im(im,y)
     if(map):
         plotting(x)
