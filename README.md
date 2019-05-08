@@ -1,6 +1,7 @@
 
 # Lego-NET
-Lego recognizing network. It is a AI part of LEGO sorting machine/
+Lego recognizing network. This solution is to be used as an
+AI part of robot which is sorting objects.
 ## REQUIREMENTS
 - Python 3.5.2
 - Tensorflow 1.12.0
