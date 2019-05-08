@@ -216,4 +216,4 @@ if __name__ == '__main__':
     if(m == "unet"):
         model = load_model("unet",weights = w)
         unet_model(Image.open(args.img))
-    # PLT.show()
+    PLT.show()
