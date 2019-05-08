@@ -21,14 +21,22 @@ from skimage import measure
 map = ''
 w = ''
 Debug = ''
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
-
-def finder_OpenCV(img):
+def finder_OpenCV(img): # OpenCV contours finder
     for i in range(6):
         if(name[i]=="nothing"):
             continue
         m=img[:,:,i].max()
-        img[:,:,i]=img[:,:,i]-m*0.6
+        # img[:,:,i]=img[:,:,i]-m*0.6
     img = np.where(img > 0, 1, 0)
     arr =[]
     # print(img.shape)
@@ -47,7 +55,7 @@ def finder_OpenCV(img):
             arr.append(objekt)
     return arr
 
-def circle_avr(x,y,arr,clas,radius):
+def circle_avr(x,y,arr,clas,radius): # calculates the average of the elements inside the circle in the matrix
     sigma = 0
     n = 0
     for dx in range(x-radius ,x+radius+1):
@@ -58,7 +66,8 @@ def circle_avr(x,y,arr,clas,radius):
                 n+=1
     return sigma/n
 
-def circle_sum(x,y,arr,clas,radius):
+
+def circle_sum(x,y,arr,clas,radius):  # calculates the sum of the elements inside the circle in the matrix
     sigma = 0
     n = 0
     for dx in range(x-radius ,x+radius+1):
@@ -67,7 +76,7 @@ def circle_sum(x,y,arr,clas,radius):
                     continue
     return sigma
 
-def finder(result): # my finder
+def finder(result): # self created finder
     radius = 20
     arr =[]
     global name
@@ -93,52 +102,32 @@ def finder(result): # my finder
             arr.append(objekt)
     return arr
 
-def create_model():
-    json_file = open("models/cnn_model.json", "r")    ###loading from json file the model
+def load_model(m,weights=None):
+    json_file = open("models/{}_model.json".format(m), "r")    ###loading from json file the model
     model_json = json_file.read()
     model = model_from_json(model_json)
-    model.load_weights(w)       ###loading weights from file
-    model.compile(loss='categorical_crossentropy',
-                  optimizer="adam",
-                  metrics=['accuracy'])
+    if(D):
+        model.summary()
+    if(weights is None):
+        return model
+    model.load_weights(weights)       ###loading weights from file
     return model
 
-
-def check_objects(im,results):
-    checked = []
-    global name
-    global model
-    for result in results:
-            coord,obj = result### one object
-            #x,y,obj = result
-            if(name[obj] == "nothing"):
-                continue
-
-            x,y,w,h=coord
-
-            sample = np.asarray(im.crop((x, y, x+w, y+h)).convert("RGB").resize((100,100)))
-            sample =np.expand_dims(sample, axis=0)/255   ###adding one dimension to sample
-            res = model.predict(sample)                  ###neral network prediction
-
-            prob = res[0][obj]
-
-            if(round(prob) != 0 ):
-                checked.append(result)
-
-
-    return checked
 def show_im(im,results):
+    img = im.convert("RGB")
     for result in results:
             coord,obj = result### one object
             #x,y,obj = result
             if(name[obj] == "nothing"):
                 continue
             x,y,w,h=coord
-            sample = np.asarray(im.crop((x, y, x+w, y+h)).convert("RGB").resize((100,100)))
+            sample = np.asarray(img.crop((x, y, x+w, y+h)).convert("RGB").resize((100,100)))
             sample =np.expand_dims(sample, axis=0)/255   ###adding one dimension to sample
             res = model.predict(sample)                  ###neral network prediction
             prob = res[0][obj]
             print("{} {} {}".format(coord,name[obj],prob))
+            if(round(prob) == 0 ):
+                continue
             draw = ImageDraw.Draw(im)
             draw.rectangle((x,y,x+w,y+h),outline='green')
             draw.text((x,y),text = name[obj]+ "  " + str(prob),fill="green")
@@ -169,41 +158,62 @@ def process(im):
             heatmap[dx:dx+100,dy:dy+100,obj] += res.max()
     return heatmap
 
-def plotting(x):
+
+
+
+
+def cnn_model(im):
+    x = process(im)
+    # y = finder_OpenCV(x)            ### return coordinates of objects[x,y,w,h]
+    # y = check_objects(im,y)
+    # show_im(im,y)
+
     fig = PLT.figure()
     for i in range(0,6):
         PLT.subplot(2,3,i+1).set_title(name[i])
-        PLT.imshow(x[:,:,i].T,cmap='jet')
+        PLT.imshow(x[:,:,i].T)
         PLT.axis('off')
-        PLT.colorbar()
-    PLT.show()
-
-def main(im):
-    x = process(im)
-    y = finder_OpenCV(x)            ### return coordinates of objects[x,y,w,h]
-
-    # y = check_objects(im,y)
-    show_im(im,y)
-    if(map):
-        plotting(x)
+        # PLT.colorbar()
+    PLT.subplot(2,3,6).set_title("photo")
+    PLT.imshow(im)
     return 0
-
+def unet_model(im):
+    name = ['block_6x1', 'container', 'engine', 'wheel_big', 'wheel_middle']
+    img = np.asarray(im.convert("RGB"))
+    im = np.expand_dims(img,axis=0)/255 #U-net input is (1,480,640,3)
+    x = model.predict(im)
+    fig = PLT.figure(1)
+    for i in range(0,5): #  show plot for all prediction
+        PLT.subplot(2,3,i+1).set_title(name[i])
+        PLT.axis('off')
+        PLT.imshow(x[0,:,:,i])
+    PLT.subplot(2,3,6).set_title("photo")
+    PLT.axis('off')
+    PLT.imshow(img)
+    return 0
+name = LOAD.load_names()
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Finding objects on image")
     parser.add_argument("--image",action = "store", metavar='<path>',default = None, required=True ,dest = "img", help="Image")
-    # parser.add_argument("--model",dest='model',default = "cnn", choices=['cnn'], help="Models")
-    parser.add_argument("--Weights",action = "store",default="cnn_weights.h5", metavar='<path>',required=True,dest = "w", help="Weights")
-    parser.add_argument("-d", "--Debug ",dest='Debug', action="store_false", help="Debuging information")
-    parser.add_argument("--map",dest="map",action="store_true",help="Plotting heatmap")
+    parser.add_argument("--model",dest='model',default = "cnn", choices=["cnn","unet"], help="Models")
+    parser.add_argument("--weights",action = "store", metavar='<path>', dest = "w", help="Weights")
+    parser.add_argument("-d", "--Debug ",dest='Debug', action="store_true", help="Debuging information and models parameters")
     args = parser.parse_args()
-    # print(args.model)
-    if(args.Debug):
-        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' ###no debugging info
-
-    name = LOAD.load_names()
-    # m = args.model
+    m = args.model
+    D= args.Debug
     w = args.w
-    map = args.map
-    Debug = args.Debug
-    model = create_model()
-    main(Image.open(args.img))
+    if(not D):
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' ###no TF debugging info
+
+
+    if(w == None):
+        print(bcolors.WARNING + "No pretrained weights the results can be unpredictable"+ bcolors.ENDC)
+
+    if(m == "cnn"):
+        model = load_model("cnn",weights = w)
+        cnn_model(Image.open(args.img))
+
+    if(m == "unet"):
+        model = load_model("unet",weights = w)
+        unet_model(Image.open(args.img))
+    # PLT.show()
