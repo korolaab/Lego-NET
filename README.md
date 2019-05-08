@@ -14,7 +14,9 @@ Input ```python im_process.py --image=<path> --Weights=<weights path>``` You wil
 Add  ```--map ``` if you want to watch heatmap.
 ## EXAMPLES
 ![CNN output](https://sun1-6.userapi.com/c844722/v844722616/18d1f0/RWZLHSuz6x0.jpg)
+CNN example
 ![U-Net output](https://pp.userapi.com/c847220/v847220898/1b0b58/et8-0wIU5uI.jpg)
+Unet example
 ## DATASET
 Extract to root of Lego_hand archive
 - [CNN](https://drive.google.com/file/d/1D7mEB8XH9sLy6GHo89HE-NMJRcYorvLq/view?usp=sharing)
