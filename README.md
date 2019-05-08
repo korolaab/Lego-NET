@@ -1,6 +1,6 @@
 
 # Lego-NET
-Lego recognizing network. The main task of the machine is sorting Lego parts such as: Container, Wheel, Engine.
+Lego recognizing network. It is a AI part of LEGO sorting machine/
 ## REQUIREMENTS
 - Python 3.5.2
 - Tensorflow 1.12.0
