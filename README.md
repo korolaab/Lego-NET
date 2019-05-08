@@ -14,13 +14,14 @@ Input ```python im_process.py --image=<path> --Weights=<weights path>``` You wil
 Add  ```--map ``` if you want to watch heatmap.
 ## EXAMPLES
 <div>
-  <img src="https://pp.userapi.com/c845420/v845420037/1e53bd/P6j-2s2mfYc.jpg" alt="CNN output example">
+  <img src="https://pp.userapi.com/c844216/v844216037/1eb8e3/hl2pBkrQPhs.jpg" alt="CNN output example">
 </div>
 CNN output example
 <div>
   <img src="https://pp.userapi.com/c845420/v845420037/1e53bd/P6j-2s2mfYc.jpg" alt="U-Net output example">
 <div/p>
 U-Net output example
+
 ## DATASET
 Extract to root of Lego-NET archive
 - [CNN](https://drive.google.com/file/d/1D7mEB8XH9sLy6GHo89HE-NMJRcYorvLq/view?usp=sharing)
