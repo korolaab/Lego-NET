@@ -10,8 +10,7 @@ Lego recognizing network. The main task of the machine is sorting Lego parts suc
 2. Open terminal.
 3. Input ```python train.py --model=cnn```have nice training. =)
 ## HOW TO USE
-Input ```python im_process.py --image=<path> --Weights=<weights path>``` You will get location of objects.
-Add  ```--map ``` if you want to watch heatmap.
+Input ```python im_process.py --image=<path> --Weights=<weights path>```. You will get a probability map for all objects.
 ## EXAMPLES
 <div>
   <img src="https://pp.userapi.com/c844216/v844216037/1eb8e3/hl2pBkrQPhs.jpg" alt="CNN output example">
