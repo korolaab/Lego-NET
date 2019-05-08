@@ -13,14 +13,14 @@ Lego recognizing network. The main task of the machine is sorting Lego parts suc
 Input ```python im_process.py --image=<path> --Weights=<weights path>``` You will get location of objects.
 Add  ```--map ``` if you want to watch heatmap.
 ## EXAMPLES
-
-
 <div>
-  ![CNN output](https://sun1-6.userapi.com/c844722/v844722616/18d1f0/RWZLHSuz6x0.jpg)
-  ![U-Net output](https://pp.userapi.com/c847220/v847220898/1b0b58/et8-0wIU5uI.jpg)
+  ![CNN output](https://pp.userapi.com/c844216/v844216037/1eb8e3/hl2pBkrQPhs.jpg)
+</div>
+CNN example
+<div>
+  ![U-Net output](https://pp.userapi.com/c845420/v845420037/1e53bd/P6j-2s2mfYc.jpg)
 <div/p>
-
-Unet example
+U-Net example
 ## DATASET
 Extract to root of Lego-NET archive
 - [CNN](https://drive.google.com/file/d/1D7mEB8XH9sLy6GHo89HE-NMJRcYorvLq/view?usp=sharing)
