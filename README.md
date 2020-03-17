@@ -16,7 +16,7 @@ Input ```python im_process.py --image=<path> --Weights=<weights path>```. You wi
 <div>
   <img src="https://pp.userapi.com/c844216/v844216037/1eb8e3/hl2pBkrQPhs.jpg" alt="CNN output example">
 </div>
-CNN output example
+Basic CNN output example
 <div>
   <img src="https://pp.userapi.com/c845420/v845420037/1e53bd/P6j-2s2mfYc.jpg" alt="U-Net output example">
 <div/p>
